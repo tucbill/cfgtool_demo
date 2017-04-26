@@ -14,43 +14,89 @@
 
 import argparse
 import sys
+import time
 
 VERSION = '1.0'
-REPO_ACTIONS = ['initialize']
+REPO_ACTIONS = ['initialize', 'archive']
 CONFIG_ACTIONS = ['set', 'list', 'check']
+CONFIG_SETTINGS = ['scale', 'sysctl', 'device', 'all'] 
+REPO_PATH_DEFAULT='/usr/lpp/mmfs/samples/config-monkey'
+REPO_ARCHIVE_PATH_DEFAULT='/tmp/config-monkey-archive.bundle'
+REPO_URL='https://github.com/tucbill/config-monkey'
 
 def get_args():
     parser = argparse.ArgumentParser(description=('Example config monkey tools (version %s)' % VERSION))
     subparsers = parser.add_subparsers(help='commands')
   
-    repo_parser = subparsers.add_parser('repo', help='repository commands')
+    repo_parser = subparsers.add_parser('repo', help='repository management actions',
+                                        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     repo_parser.add_argument('repo_action',
-                             help='initialize the configuration repository')
-    repo_parser.add_argument('--repo-path', required=True,
-                             help='Path to git repository where configuration definitions are stored')
+                             help='Management actions on the repository, valid options are ' 
+                             'initialize: initialize the local repository from remote using "git clone", \n'
+                             'archive: create an archive of the repository for backup using "git bundle"')
+    repo_parser.add_argument('--repo-path', 
+                             help='Path to git repository where configuration definitions are stored',
+			     default=REPO_PATH_DEFAULT)
+    repo_parser.add_argument('--archive-file', 
+			     help='Path to archive file that is created using "git bundle" command',
+                             default=REPO_ARCHIVE_PATH_DEFAULT)
 
-    config_parser = subparsers.add_parser('config', help='configuration commands')
-    config_parser.add_argument('cmd_action',
-                               help='Tool action, valid optoions are %s' % CONFIG_ACTIONS)
-
-    config_parser.add_argument('--profile_name',         
-                               help='Name of profile to name or ip address of gpfs node to send REST'
-                               'requests to')
-    config_parser.add_argument('--repo-path', required=True,
-                               help='Path to git repository where configuration definitions are stored')
-    config_parser.add_argument('--resource',   dest='resource',
-                        help='resource type from %s' % [1,2,3])
-    config_parser.add_argument('--filesystem', dest='filesystem',
-                        help='filesystem for ops that require parameter')
-    config_parser.add_argument('--fileset',    dest='fileset',
-                        help='fileset for ops that require parameter')
+    config_parser = subparsers.add_parser('config', help='configuration actions',
+                                          formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    config_parser.add_argument('config_action',
+                               help='Configuration action, valid options are %s' % CONFIG_ACTIONS)
+    config_parser.add_argument('--profile', required=True,
+                               help='Name of profile containing configuration specifications. '
+                               'The profile maps to a git branch containing all of the specification files '
+                               'and artifacts.')
+    config_parser.add_argument('--repo-path', 
+                               help='Path to git repository where configuration definitions are stored',
+			       default=REPO_PATH_DEFAULT)
+    config_parser.add_argument('--settings', 
+                               help='Specify which settings to apply, valid options are %s.  Pass a comma '
+                               'separated list to specify more than one setting, for example "scale,device"' %
+			       CONFIG_SETTINGS,
+                               default='all')
+    config_parser.add_argument('--node-class', required=True,
+                               help='The node class specifying the set of nodes to configure, check or list')
     return parser.parse_args()
 
 def check_args(args):
-    # verify that args are valid
-    # 1. args.cmd_object in  CMD_OBJECTS
-    # 2. git checkout -b profile_name is successfull
-    # 3. etc.
+    # if repo_action exists:
+    # - verify repo_action in REPO_ACTIONS
+    # repo initialize
+    # - does repo-path parent exist and is it writeable?
+    # - archive-file should not be passed as an argument
+    # repo archive
+    # - does repo-path parent exist and is it writeable?
+    # - does archive-file path exist and is it writeable?
+    # if config-action exists:
+    # - verify config-action in CONFIG_ACTIONS
+    # config list
+    # - repo-path should not be passed as an argument
+    # - profile should not be passed as an argument
+    # - settings is a valid subset of CONFIG_SETTINGS
+    # - node-class is a valid Spectrum Scale node class
+    # config check
+    # - repo-path is a valid repository
+    # - profile is a valid branch name in the repository
+    # - settings is a valid subset of CONFIG_SETTINGS
+    # - node-class is a valid Spectrum Scale node class
+    # config set
+    # - repo-path is a valid repository
+    # - profile is a valid branch name in the repository
+    # - settings is a valid subset of CONFIG_SETTINGS
+    # - node-class is a valid Spectrum Scale node class
+    if hasattr(args, 'repo_action'):
+        if args.repo_action not in REPO_ACTIONS:
+            print('Invalid repository action requested: "%s" not in %s' %
+	         (args.repo_action, REPO_ACTIONS))
+            return False
+    elif hasattr(args, 'config_action'):
+        if args.config_action not in CONFIG_ACTIONS:
+            print('Invalid config action requested: "%s" not in %s' %
+                 (args.config_action, CONFIG_ACTIONS))
+            return False
     return True
 
 def initialize_repo(args):
@@ -58,17 +104,18 @@ def initialize_repo(args):
    return True
 
 def main(args):
-    print 'Starting with args %s' % args
-    check_args(args)
+    print 'Starting at %s' % time.asctime()
+    if not check_args(args):
+       print 'Exiting because of invalid arguments at %s' % time.asctime()
     if hasattr(args, 'repo_action')  and args.repo_action == 'initialize':
         print('Initialize repository at "%s"' % args.repo_path)
 	initialize_repo(args)
-    elif hasattr(args, 'cmd_action'):
-        if args.cmd_action == 'set':
+    elif hasattr(args, 'config_action'):
+        if args.config_action == 'set':
             print('Config set...')
-        if args.cmd_action == 'check':
+        if args.config_action == 'check':
             print('Config check...')
-        if args.cmd_action == 'list':
+        if args.config_action == 'list':
             print('Config list...')
 
 if __name__ == '__main__':
