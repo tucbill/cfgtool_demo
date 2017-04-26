@@ -1,6 +1,6 @@
 {
-  "name": "spectrum-scale-fpo-rules-spec",
-  "rule-file": "99-spectrum-scale-fpo.rule",
+  "name": "spectrum-scale-ces-rules-spec",
+  "rule-file": "99-spectrum-scale-ces.rule",
   "rule-attrs": {
         "queue": {	
 		"scheduler": "deadline",

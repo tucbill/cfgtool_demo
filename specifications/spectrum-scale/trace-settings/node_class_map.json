@@ -1,6 +1,6 @@
 { "specs": [ { "name": "scale-ces-trace.json",
                "node_classes": ["ces_nodes"]},
              { "name": "scale-storage-trace.json",
-               "node_classes": ["storage_nodes", "fpo_nodes"]}
+               "node_classes": ["storage_nodes", "ess_nodes"]}
            ]
 }
