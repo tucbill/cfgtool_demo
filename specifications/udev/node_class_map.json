@@ -1,5 +1,5 @@
 { "specs": [ { "name": "spectrum-scale-storage-udev-rules-spec.json",
-               "node_classes": ["storage_nodes", "mestor_nodes"]},
+               "node_classes": ["storage_nodes", "fpo_nodes"]},
              { "name": "spectrum-scale-ces-udev-rules-spec.json",
                "node_classes": ["ces_nodes"]}
            ]
