@@ -1,0 +1,7 @@
+{ "specs": [ { "name": "gpfs_clients_defaults.profile",
+               "node_classes": ["gpfs_clients"]},
+             { "name": "gpfs_fpo_defaults.profile",
+               "node_classes": ["storage_nodes", "fpo_nodes"]}
+           ]
+}
+

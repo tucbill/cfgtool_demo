@@ -1,0 +1,7 @@
+{ "specs": [ { "name": "spectrum-scale-storage",
+               "node_classes": ["storage_nodes", "mestor_nodes"]},
+             { "name": "spectrum-scale-ces",
+               "node_classes": ["ces_nodes"]}
+           ]
+}
+
