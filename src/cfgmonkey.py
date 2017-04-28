@@ -17,20 +17,24 @@ import argparse
 import sys
 import time
 
-VERSION = '1.0'
-REPO_ACTIONS = ['initialize', 'list', 'archive']
+CFGMONKEY_VERSION = '1.0'
+
 CONFIG_ACTIONS = ['set', 'show', 'check']
 CONFIG_SETTINGS = ['scale', 'sysctl', 'device', 'all']
+
+REPO_ACTIONS = ['initialize', 'archive']
 REPO_PATH_DEFAULT = '/usr/lpp/mmfs/samples/config-monkey'
 REPO_ARCHIVE_PATH_DEFAULT = '/tmp/config-monkey-archive.bundle'
 REPO_URL = 'https://github.com/tucbill/config-monkey'
+
+VERSION_ACTIONS = ['list', 'create', 'diff', 'update', 'delete']
 
 
 def get_args():
     parser = argparse.ArgumentParser(
         description=(
             'Example config monkey tools (version %s).' %
-            VERSION))
+            CFGMONKEY_VERSION))
     subparsers = parser.add_subparsers(help='commands')
 
     repo_parser = subparsers.add_parser(
@@ -39,10 +43,9 @@ def get_args():
     repo_parser.add_argument(
         'repo_action', help='Management actions on the repository, valid '
         'options are "initialize": initialize the local repository from the '
-        'remote repository using "git clone" command; "list": list the '
-        'configuration sets defined in the local repository; "archive": '
-        'create an archive of the local repository for backup using "git '
-        'bundle" command.')
+        'remote repository using "git clone" command; "archive": create an '
+        'archive of the local repository for backup using "git bundle" '
+        'command.')
     repo_parser.add_argument(
         '--repo-path',
         help='Path to git repository where configuration definitions are '
@@ -84,6 +87,15 @@ def get_args():
         required=True,
         help='The node class specifying the set of nodes to configure, check '
         'or show.')
+
+    version_parser = subparsers.add_parser(
+        'version',
+        help='Version management actions.')
+    version_parser.add_argument(
+        'version_action',
+        help='Version management action, valid options are %s.  For "list" '
+        'list the configuration sets defined in the local repository.' %
+        VERSION_ACTIONS)
     return parser.parse_args()
 
 
@@ -138,7 +150,7 @@ def repo_archive(args):
     return True
 
 
-def repo_list(args):
+def version_list(args):
     print('Available specifications in local repository: fpo, ess')
 
 
@@ -158,8 +170,6 @@ def main(args):
     if hasattr(args, 'repo_action'):
         if args.repo_action == 'initialize':
             repo_initialize(args)
-        elif args.repo_action == 'list':
-            repo_list(args)
         elif args.repo_action == 'archive':
             repo_archive(args)
     elif hasattr(args, 'config_action'):
@@ -169,7 +179,9 @@ def main(args):
             print('Config check...')
         if args.config_action == 'show':
             print('Config show...')
-
+    elif hassattr(agrs, 'version_action'):
+        if args.version_action == 'list':
+            version_list(args)
 
 if __name__ == '__main__':
     main(get_args())
