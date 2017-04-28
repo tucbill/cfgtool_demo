@@ -139,7 +139,7 @@ def repo_archive(args):
 
 
 def repo_list(args):
-    print('Available specifications in local repository: [fpo, ess]')
+    print('Available specifications in local repository: fpo, ess')
 
 
 def config_set(args):
