@@ -1,7 +1,10 @@
-{ "specs": [ { "name": "gpfs_clients_defaults.profile",
-               "node_classes": ["gpfs_clients"]},
-             { "name": "gpfs_fpo_defaults.profile",
-               "node_classes": ["storage_nodes", "fpo_nodes"]}
+{ "specs": [ {"profile_name": "gpfsclientdefaults.profile",
+              "node_classes": ["gpfs_clients"]},
+             {"profile_name": "gpfsfpodefaults.profile",
+              "node_classes": ["storage_nodes", "fpo_nodes"]},
+             {"profile_name": "gpfsprotocoldefaults.profile",
+              "node_classes": ["protcol_nodes", "ces_nodes"]},
+             {"profile_name": "gpfsprotocolrandomio.profile",
+              "node_classes": ["other_nodes"]}
            ]
 }
-
