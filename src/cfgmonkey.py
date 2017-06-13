@@ -65,10 +65,10 @@ def get_args():
         help='Configuration action, valid options are %s' %
         CONFIG_ACTIONS)
     config_parser.add_argument(
-        '--specs',
-        help='Name of the set of configuration specifications to be used.  '
-        'The specification set name maps to a git branch containing all of '
-        'the specification files and artifacts.  Specification sets are '
+        '--spec',
+        help='Version of the configuration specifications to be used.  '
+        'The version name maps to a git branch containing all of '
+        'the specification files and artifacts.  Configuration versions are '
         'typically used to organize settings by storage type, for example '
         'ESS, FPO, Mestor, etc.')
     config_parser.add_argument(
@@ -96,6 +96,33 @@ def get_args():
         help='Version management action, valid options are %s.  For "list" '
         'list the configuration sets defined in the local repository.' %
         VERSION_ACTIONS)
+    version_parser.add_argument(
+        '--repo-path',
+        help='Path to local git repository where configuration definitions '
+        'are stored.  The default value is %s' % REPO_PATH_DEFAULT,
+        default=REPO_PATH_DEFAULT)
+    version_parser.add_argument(
+        '--spec',
+        help='Version name of the configuration specifications to be used.  '
+        'The version name maps to a git branch containing all of '
+        'the specification files and artifacts.  Configuration versions are '
+        'typically used to organize settings by storage type, for example '
+        'ESS, FPO, Mestor, etc.')
+    version_parser.add_argument(
+        '--spec2',
+        help='The version name to compare against in difference operations')
+    version_parser.add_argument(
+        '--current_version',
+        help='Compare the specified repository version against current '
+        'settings on the specified nodes')
+    version_parser.add_argument(
+        '--node-class',
+        help='The node class specifying the set of nodes to use for diff '
+        'operation.')
+    version_parser.add_argument(
+        '--comment',
+        help='The commit comment used to document version updates')
+
     return parser.parse_args()
 
 
@@ -112,17 +139,17 @@ def args_check(args):
     # - verify config-action in CONFIG_ACTIONS
     # config show
     # - repo-path should not be passed as an argument
-    # - specs should not be passed as an argument
+    # - spec should not be passed as an argument
     # - settings is a valid subset of CONFIG_SETTINGS
     # - node-class is a valid Spectrum Scale node class
     # config check
     # - repo-path is a valid repository
-    # - specs is a valid branch name in the repository
+    # - spec is a valid branch name in the repository
     # - settings is a valid subset of CONFIG_SETTINGS
     # - node-class is a valid Spectrum Scale node class
     # config set
     # - repo-path is a valid repository
-    # - specs is a valid branch name in the repository
+    # - spec is a valid branch name in the repository
     # - settings is a valid subset of CONFIG_SETTINGS
     # - node-class is a valid Spectrum Scale node class
     if hasattr(args, 'repo_action'):
@@ -156,7 +183,7 @@ def version_list(args):
 
 def config_set(args):
     print('Set configuration using specification set "%s", for settings "%s" '
-          'on node class "%s"' % (args.specs, args.settings, args.node_class))
+          'on node class "%s"' % (args.spec, args.settings, args.node_class))
 
 
 def config_check(args):
